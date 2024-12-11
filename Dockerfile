@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Copy the backend application
 COPY backend /app
-COPY backend/html /app/html
+COPY backend/html/index.html /app/html/index.html
 
 
 # Expose the Flask port
