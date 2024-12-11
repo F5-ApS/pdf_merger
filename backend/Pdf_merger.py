@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from waitress import serve
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
