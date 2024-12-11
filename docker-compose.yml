@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  flask-pdf-service:
+    build: .
+    ports:
+      - "8080:8030"
+    environment:
+      - FLASK_ENV=production
