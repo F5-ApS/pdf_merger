@@ -1,8 +1,21 @@
 version: '3.8'
 services:
-  flask-pdf-service:
-    build: .
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: flask_backend
     ports:
       - "8030:8080"
     environment:
       - FLASK_ENV=production
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: nginx_frontend
+    ports:
+      - "8031:80"
+    depends_on:
+      - backend
