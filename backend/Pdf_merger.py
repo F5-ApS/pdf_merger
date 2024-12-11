@@ -9,7 +9,7 @@ from flask_cors import CORS
 
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "http://10.10.50.71:8031"}})
 
 # Configuration
 UPLOAD_FOLDER = os.path.abspath('uploads')
@@ -119,6 +119,12 @@ def process_pdfs():
         logger.error(f"Error processing PDFs: {str(e)}")
         return jsonify({'error': f"Error processing PDFs: {str(e)}"}), 500
 
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "http://10.10.50.71:8031"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
