@@ -9,16 +9,16 @@ from waitress import serve
 app = Flask(__name__)
 
 # Configuration
-UPLOAD_FOLDER = os.path.abspath('uploads')
-PROCESSED_FOLDER = os.path.abspath('processed')
-HTML_FOLDER = os.path.abspath('html')  # New HTML folder
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # Base directory of the script
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+PROCESSED_FOLDER = os.path.join(BASE_DIR, 'processed')
+HTML_FILE = os.path.join(BASE_DIR, 'index.html')  # Path to index.html
 ALLOWED_EXTENSIONS = {'pdf'}
 MAX_CONTENT_LENGTH = 32 * 1024 * 1024  # Limit to 32 MB per file
 
 # Create directories
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
-os.makedirs(HTML_FOLDER, exist_ok=True)  # Ensure the HTML folder exists
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -122,7 +122,7 @@ def process_pdfs():
 @app.route('/', methods=['GET'])
 def serve_index():
     """Serve the HTML index file."""
-    return send_from_directory(HTML_FOLDER, 'index.html')
+    return send_file(HTML_FILE)
 
 
 @app.errorhandler(413)
