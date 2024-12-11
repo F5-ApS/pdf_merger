@@ -1,25 +1,24 @@
 import os
 import uuid
 import logging
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory
 import fitz  # PyMuPDF
 from werkzeug.utils import secure_filename
 from waitress import serve
-from flask_cors import CORS
-
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://10.10.50.71:8031"}})
 
 # Configuration
 UPLOAD_FOLDER = os.path.abspath('uploads')
 PROCESSED_FOLDER = os.path.abspath('processed')
+HTML_FOLDER = os.path.abspath('html')  # New HTML folder
 ALLOWED_EXTENSIONS = {'pdf'}
 MAX_CONTENT_LENGTH = 32 * 1024 * 1024  # Limit to 32 MB per file
 
 # Create directories
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
+os.makedirs(HTML_FOLDER, exist_ok=True)  # Ensure the HTML folder exists
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -119,16 +118,17 @@ def process_pdfs():
         logger.error(f"Error processing PDFs: {str(e)}")
         return jsonify({'error': f"Error processing PDFs: {str(e)}"}), 500
 
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://10.10.50.71:8031"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    return response
+
+@app.route('/', methods=['GET'])
+def serve_index():
+    """Serve the HTML index file."""
+    return send_from_directory(HTML_FOLDER, 'index.html')
+
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
     return jsonify({'error': 'File size exceeds the allowed limit of 32MB.'}), 413
+
 
 if __name__ == '__main__':
     serve(app, host='0.0.0.0', port=8080)

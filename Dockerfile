@@ -20,6 +20,7 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 # Copy the backend application
 COPY backend /app
 
+
 # Expose the Flask port
 EXPOSE 8080
 
