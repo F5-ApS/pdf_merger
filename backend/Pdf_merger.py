@@ -5,8 +5,10 @@ from flask import Flask, request, jsonify, send_file
 import fitz  # PyMuPDF
 from werkzeug.utils import secure_filename
 from waitress import serve
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Configuration
 UPLOAD_FOLDER = os.path.abspath('uploads')
