@@ -4,15 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload PDFs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #e8752a;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        input[type="submit"] {
+            background-color: #e8752a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #d46322;
+        }
+
+    </style>
 </head>
 <body>
-    <h2>Upload Survey and Template PDFs</h2>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <label for="template">Upload Template PDF:</label>
-        <input type="file" name="template" required><br><br>
-        <label for="survey">Upload Survey PDF:</label>
-        <input type="file" name="survey" required><br><br>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="container">
+        <h2>Survey PDF Merger</h2>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <label for="template">Upload Template PDF:</label>
+            <input type="file" name="template" required><br>
+            <label for="survey">Upload Survey PDF:</label>
+            <input type="file" name="survey" required><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
 </body>
 </html>
