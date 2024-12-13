@@ -26,4 +26,4 @@ COPY backend/upload.html /app/upload.html
 EXPOSE 8030
 
 # Command to run the backend
-CMD ["python", "Pdf_merger.py"]
+CMD ["python", "pdf_merger.py"]
