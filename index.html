@@ -22,37 +22,53 @@
     <script>
         document.getElementById('uploadForm').addEventListener('submit', async function (event) {
             event.preventDefault();
-    
+
             // Get the files from input fields
             const templateFile = document.getElementById('template').files[0];
             const surveyFile = document.getElementById('survey').files[0];
-    
+
             if (!templateFile || !surveyFile) {
                 document.getElementById('status').textContent = 'Please select both PDF files.';
                 return;
             }
-    
+
             // Prepare the FormData for sending to the server
             const formData = new FormData();
             formData.append('template', templateFile);
             formData.append('survey', surveyFile);
-    
+
             // Display status message
             document.getElementById('status').textContent = 'Uploading...';
-    
+
             try {
                 // Send the POST request to the server
-                const response = await fetch('http://http://10.10.50.71:8030/process', {
+                const response = await fetch('/api/upload', {
                     method: 'POST',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     body: formData
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Error uploading files');
                 }
-    
-                // Download the processed PDF directly
-                const blob = await response.blob();
+
+                const result = await response.json();
+                if (result.status !== 'success') {
+                    throw new Error(result.message || 'Unknown error');
+                }
+
+                // Fetch the merged PDF file via GET request
+                const fileResponse = await fetch(`/api/download/${result.file_id}`, {
+                    method: 'GET'
+                });
+
+                if (!fileResponse.ok) {
+                    throw new Error('Error downloading merged file');
+                }
+
+                const blob = await fileResponse.blob();
                 const downloadUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = downloadUrl;
@@ -60,13 +76,13 @@
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
-    
+
                 // Update the status message
                 document.getElementById('status').textContent = 'Upload successful! File downloaded.';
             } catch (error) {
                 document.getElementById('status').textContent = 'Error: ' + error.message;
             }
         });
-    </script>    
+    </script>
 </body>
 </html>
