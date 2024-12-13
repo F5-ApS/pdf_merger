@@ -18,7 +18,7 @@ COPY backend/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Copy the backend application
-COPY backend .
+COPY backend /app
 COPY backend/upload.html /app/upload.html
 
 
