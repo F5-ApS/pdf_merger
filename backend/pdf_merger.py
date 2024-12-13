@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, send_file, render_template_string
 import fitz  # PyMuPDF
 from werkzeug.utils import secure_filename
 
@@ -45,7 +45,8 @@ def overlay_pdfs(template_path, survey_path, output_path):
 
 @app.route('/')
 def upload_form():
-    return render_template('index.html')  # Updated to serve index.html
+    with open(os.path.join(BASE_DIR, 'upload.html')) as file:
+        return render_template_string(file.read())
 
 @app.route('/upload', methods=['POST'])
 def upload_file():

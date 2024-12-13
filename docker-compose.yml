@@ -6,6 +6,6 @@ services:
       dockerfile: Dockerfile
     container_name: flask_backend
     ports:
-      - "8030:8080"
+      - "8030:8030"
     environment:
       - FLASK_ENV=production
