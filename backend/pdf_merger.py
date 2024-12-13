@@ -1,14 +1,14 @@
 import os
-import uuid
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, render_template, send_file
 import fitz  # PyMuPDF
-from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(app)
 
-UPLOAD_FOLDER = 'uploads'
-PROCESSED_FOLDER = 'processed'
+# Configure folders
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+PROCESSED_FOLDER = os.path.join(BASE_DIR, 'processed')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 
@@ -43,42 +43,37 @@ def overlay_pdfs(template_path, survey_path, output_path):
     output_pdf.save(output_path)
     output_pdf.close()
 
-@app.route('/api/upload', methods=['POST'])
+@app.route('/')
+def upload_form():
+    return render_template('index.html')  # Updated to serve index.html
+
+@app.route('/upload', methods=['POST'])
 def upload_file():
     if 'template' not in request.files or 'survey' not in request.files:
-        return jsonify({'status': 'error', 'message': 'Missing files'}), 400
+        return 'Missing files', 400
 
     template = request.files['template']
     survey = request.files['survey']
 
-    template_path = os.path.join(UPLOAD_FOLDER, template.filename)
-    survey_path = os.path.join(UPLOAD_FOLDER, survey.filename)
-    
-    # Generate a unique file name for the output
-    file_id = str(uuid.uuid4())
-    output_path = os.path.join(PROCESSED_FOLDER, f'survey_with_template_overlay_{file_id}.pdf')
+    # Ensure secure filenames for the uploaded files
+    template_filename = secure_filename(template.filename)
+    survey_filename = secure_filename(survey.filename)
+
+    template_path = os.path.join(UPLOAD_FOLDER, template_filename)
+    survey_path = os.path.join(UPLOAD_FOLDER, survey_filename)
+    output_path = os.path.join(PROCESSED_FOLDER, 'survey_with_template_overlay.pdf')
 
     # Save uploaded files
     template.save(template_path)
     survey.save(survey_path)
 
     # Process the PDFs
-    try:
-        overlay_pdfs(template_path, survey_path, output_path)
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+    overlay_pdfs(template_path, survey_path, output_path)
 
-    # Return the file identifier to the client
-    return jsonify({'status': 'success', 'file_id': file_id}), 200
-
-@app.route('/api/download/<file_id>', methods=['GET'])
-def download_file(file_id):
-    output_path = os.path.join(PROCESSED_FOLDER, f'survey_with_template_overlay_{file_id}.pdf')
-
-    if not os.path.exists(output_path):
-        return jsonify({'status': 'error', 'message': 'File not found'}), 404
-
+    # Serve the processed file
     return send_file(output_path, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use a production-ready WSGI server like Gunicorn or uWSGI for deployment
+    from waitress import serve
+    serve(app, host='0.0.0.0', port=8030)

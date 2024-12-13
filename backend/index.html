@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload PDFs</title>
+</head>
+<body>
+    <h2>Upload Survey and Template PDFs</h2>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="template">Upload Template PDF:</label>
+        <input type="file" name="template" required><br><br>
+        <label for="survey">Upload Survey PDF:</label>
+        <input type="file" name="survey" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
